@@ -1,0 +1,3 @@
+---
+openvpn_client_config_file_name: openvpn.ovpn
+openvpn_client_name: "{{ inventory_hostname }}"
