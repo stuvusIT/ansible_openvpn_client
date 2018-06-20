@@ -1,11 +1,11 @@
 ---
-- name: Install apt-transport-https
+- name: Install openvpn
   apt: 
     name: openvpn
 
 - name: Slurp openvpn config
   slurp:
-    src: "{{ hostvars[openvpn_client_server].openvpn_key_dir }}/{{ openvpn_client_name }}-{{ openvpn_client_server }}.ovpn"
+    src: "{{ hostvars[openvpn_client_server].openvpn_base_dir }}/{{ openvpn_client_name }}-{{ openvpn_client_server }}.ovpn"
   register: openvpn_config_file
   delegate_to: "{{ openvpn_client_server }}"
   when: openvpn_client_server is defined
@@ -13,14 +13,14 @@
 - name: Copy to host
   copy:
     content: "{{ openvpn_config_file['content'] | b64decode }}"
-    dest: "/etc/openvpn/{{ openvpn_client_name }}-{{ openvpn_client_server }}.ovpn"
+    dest: "/etc/openvpn/{{ openvpn_client_name }}-{{ openvpn_client_server }}.conf"
   when: openvpn_client_server is defined
   notify: Restart openvpn service
 
 - name: Copy to host
   copy:
-    src: "{{ openvpn_config_file_name }}"
-    dest: "/etc/openvpn/{{ openvpn_client_name }}.ovpn"
+    src: "{{ openvpn_client_config_file_name }}"
+    dest: "/etc/openvpn/{{ openvpn_client_name }}.conf"
   when: openvpn_client_server is not defined
   notify: Restart openvpn service
 
