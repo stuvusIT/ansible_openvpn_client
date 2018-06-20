@@ -1,6 +1,6 @@
 # openvpn-client
 
-This role installs and copys an openvpn configuration, either from the [openvpn server](https://github.com/stuvusIT/openvpn) or from files in the inventory
+This role installs and copys an openvpn configuration, either from the [openvpn server](https://github.com/stuvusIT/openvpn) or from files in the inventory.
 
 
 ## Requirements
@@ -9,15 +9,13 @@ An openvpn config file either on the openvpn server or in the inventory and an a
 
 ## Role Variables
 
-| Variable                          | Default / Mandatory        | Description                                                                                |
-|-----------------------------------|----------------------------|--------------------------------------------------------------------------------------------|
-| `openvpn_client_server`           | :heavy_multiplication_x:   | Inventory name of the host running the [openvpn role](https://github.com/stuvusIT/openvpn) |
-| `openvpn_client_name`             | `{{ inventory_hostname }}` | Client name used in on the openvpn server                                                  |
-| `openvpn_client_config_file_name` | `openvpn.ovpn`             | File name to copy over, only used when `openvpn_client_server` is not set                  |
+| Variable                          | Default / Mandatory        | Description                                                                                                                       |
+|-----------------------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `openvpn_client_server`           | :heavy_multiplication_x:   | Inventory name of the host running the [openvpn role](https://github.com/stuvusIT/openvpn)                                        |
+| `openvpn_client_name`             | `{{ inventory_hostname }}` | Client name used in on the openvpn server                                                                                         |
+| `openvpn_client_config_file_name` | `openvpn.ovpn`             | File name to copy over, only used when `openvpn_client_server` is not set. Looks for the file in `files/{{ inventory_hostname }}/ |
 
 ## Example Playbook
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
 ```yml
 ---
