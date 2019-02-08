@@ -13,22 +13,22 @@
     src: "{{ hostvars[openvpn_client_server].openvpn_base_dir }}/{{ openvpn_client_name }}-{{ openvpn_client_server }}.ovpn"
   register: openvpn_config_file
   delegate_to: "{{ openvpn_client_server }}"
-  when: openvpn_client_config_filename is not defined
+  when: openvpn_client_local_config_path is not defined
 
 - name: Copy client config to host
   copy:
     content: "{{ openvpn_config_file['content'] | b64decode }}"
     dest: "{{ openvpn_client_config_path }}"
   register: openvpn_client_config_stat
-  when: openvpn_client_config_filename is not defined
+  when: openvpn_client_local_config_path is not defined
   notify: Restart OpenVPN service
 
 - name: Copy client config to host
   copy:
-    src: "files/{{ inventory_hostname }}/{{ openvpn_client_config_filename }}"
+    src: "files/{{ inventory_hostname }}/{{ openvpn_client_local_config_path }}"
     dest: "{{ openvpn_client_config_path }}"
   register: openvpn_client_config_stat
-  when: openvpn_client_config_filename is defined
+  when: openvpn_client_local_config_path is defined
   notify: Restart OpenVPN service
 
 - name: Instantiate up-script
