@@ -1,2 +1,3 @@
 ---
+openvpn_client_base_dir: /etc/openvpn
 openvpn_client_config_path: "{{ openvpn_client_base_dir }}/{{ openvpn_client_name }}-{{ openvpn_client_server }}.conf"
