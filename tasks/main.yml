@@ -38,21 +38,9 @@
     mode: 0755
   notify: Restart OpenVPN service
 
-- name: Allow up-script to execute commands
-  lineinfile:
-    path: "{{ openvpn_client_config_path }}"
-    line: script-security 2
-  notify: Restart OpenVPN service
-
-- name: Add up-script to config
-  lineinfile:
-    path: "{{ openvpn_client_config_path }}"
-    line: up {{ openvpn_client_base_dir }}/up.sh
-  notify: Restart OpenVPN service
-
 - name: Add extra lines to config
   lineinfile:
     path: "{{ openvpn_client_config_path }}"
     line: "{{ item }}"
-  with_items: "{{ openvpn_client_extra_config }}"
+  with_items: "{{ ['script-security 2', 'up '+openvpn_client_base_dir+'/up.sh'] + openvpn_client_extra_config }}"
   notify: Restart OpenVPN service
