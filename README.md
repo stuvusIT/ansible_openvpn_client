@@ -24,7 +24,7 @@ There are two ways to configure the OpenVPN client:
 * Specifying a configuration file in `openvpn_client_local_config_path`.
   If this is done, then `openvpn_client_server` can be of any value and doesn't necessarily need to match any Ansible hostname. 
 * Pulling the configuration file from the OpenVPN server.
-  This is done when `openvpn_client_confi_filename` is **not** specified.
+  This is done when `openvpn_client_local_config_path` is **not** specified.
   The OpenVPN server is then required to be an Ansible host with hostname `openvpn_client_server`.
   It needs to have the configuration file, which is to be pulled, at `/etc/openvpn/{{ openvpn_client_name }}-{{ openvpn_client_server }}.ovpn`.
   If you use our [openvpn role](https://github.com/stuvusIT/openvpn) on the server and specify this client in its `openvpn_clients` variable,
