@@ -22,6 +22,7 @@ An openvpn config file either on the openvpn server or in the inventory and an a
 There are two ways to configure the OpenVPN client:
 
 * Specifying a configuration file in `openvpn_client_local_config_path`.
+  That has to be relative to `files/{{ inventory_hostname }}`.
   If this is done, then `openvpn_client_server` can be of any value and doesn't necessarily need to match any Ansible hostname. 
 * Pulling the configuration file from the OpenVPN server.
   This is done when `openvpn_client_local_config_path` is **not** specified.
