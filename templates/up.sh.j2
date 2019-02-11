@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+set +e
+{% for command in openvpn_client_up_commands %}
+  {{- command }}
+{% endfor %}

@@ -1,26 +1,46 @@
 ---
-- name: Install openvpn
+- name: Install OpenVPN
   apt: 
     name: openvpn
 
-- name: Slurp openvpn config
+- name: Ensure base directory exists
+  file:
+    path: "{{ openvpn_client_base_dir }}"
+    state: directory
+
+- name: Slurp recommended client config
   slurp:
     src: "{{ hostvars[openvpn_client_server].openvpn_base_dir }}/{{ openvpn_client_name }}-{{ openvpn_client_server }}.ovpn"
   register: openvpn_config_file
   delegate_to: "{{ openvpn_client_server }}"
-  when: openvpn_client_server is defined
+  when: openvpn_client_local_config_path is not defined
 
-- name: Copy OpenVPN config to host 
+- name: Copy client config to host
   copy:
     content: "{{ openvpn_config_file['content'] | b64decode }}"
-    dest: "/etc/openvpn/{{ openvpn_client_name }}-{{ openvpn_client_server }}.conf"
-  when: openvpn_client_server is defined
-  notify: Restart openvpn service
+    dest: "{{ openvpn_client_config_path }}"
+  register: openvpn_client_config_stat
+  when: openvpn_client_local_config_path is not defined
+  notify: Restart OpenVPN service
 
-- name: Copy OpenVPN config to host 
+- name: Copy client config to host
   copy:
-    src: "files/{{ inventory_hostname }}/{{ openvpn_client_config_file_name }}"
-    dest: "/etc/openvpn/{{ openvpn_client_name }}.conf"
-  when: openvpn_client_server is not defined
-  notify: Restart openvpn service
+    src: "files/{{ inventory_hostname }}/{{ openvpn_client_local_config_path }}"
+    dest: "{{ openvpn_client_config_path }}"
+  register: openvpn_client_config_stat
+  when: openvpn_client_local_config_path is defined
+  notify: Restart OpenVPN service
 
+- name: Instantiate up-script
+  template:
+    src: up.sh.j2
+    dest: "{{ openvpn_client_base_dir }}/up.sh"
+    mode: 0755
+  notify: Restart OpenVPN service
+
+- name: Add extra lines to config
+  lineinfile:
+    path: "{{ openvpn_client_config_path }}"
+    line: "{{ item }}"
+  with_items: "{{ ['script-security 2', 'up '+openvpn_client_base_dir+'/up.sh'] + openvpn_client_extra_config }}"
+  notify: Restart OpenVPN service
