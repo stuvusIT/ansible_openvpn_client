@@ -1,0 +1,56 @@
+---
+
+- name: Set client facts
+  set_fact:
+    openvpn_client_client_name: "{{ openvpn_client.client_name | default(openvpn_client_default_client_name) }}"
+    openvpn_client_server_name: "{{ openvpn_client.server_name | default(openvpn_client_default_server_name) }}"
+    openvpn_client_up_commands: "{{ openvpn_client.up_commands | default(openvpn_client_default_up_commands) }}"
+    openvpn_client_extra_config: "{{ openvpn_client.extra_config | default(openvpn_client_default_extra_config) }}"
+
+- name: Set client facts
+  set_fact:
+    openvpn_client_config_identifier: "{{ openvpn_client_client_name }}-{{ openvpn_client_server_name }}"
+
+- name: Set client facts
+  set_fact:
+    openvpn_client_config_path: "{{ openvpn_client_base_dir }}/{{ openvpn_client_config_identifier }}.conf"
+
+- name: Slurp recommended client config
+  slurp:
+    src: "{{ hostvars[openvpn_client_server_name].openvpn_base_dir }}/{{ openvpn_client_config_identifier }}.ovpn"
+  register: openvpn_client_remote_config_file
+  delegate_to: "{{ openvpn_client_server_name }}"
+  when: openvpn_client.local_config_path is not defined
+
+- name: Copy client config to host
+  copy:
+    content: "{{ openvpn_client_remote_config_file['content'] | b64decode }}"
+    dest: "{{ openvpn_client_config_path }}"
+  register: openvpn_client_config_stat
+  when: openvpn_client.local_config_path is not defined
+  notify: Restart OpenVPN service
+
+- name: Copy client config to host
+  copy:
+    src: "files/{{ inventory_hostname }}/{{ openvpn_client.local_config_path }}"
+    dest: "{{ openvpn_client_config_path }}"
+  register: openvpn_client_config_stat
+  when: openvpn_client.local_config_path is defined
+  notify: Restart OpenVPN service
+
+- name: Instantiate up-script
+  template:
+    src: up.sh.j2
+    dest: "{{ openvpn_client_base_dir }}/up.sh"
+    mode: 0755
+  notify: Restart OpenVPN service
+
+- name: Add extra lines to config
+  lineinfile:
+    path: "{{ openvpn_client_config_path }}"
+    line: "{{ item }}"
+  with_items: "{{ ['script-security 2', 'up '+openvpn_client_base_dir+'/up.sh'] + openvpn_client_extra_config }}"
+  notify: Restart OpenVPN service
+
+- name: Notify restart handler
+  meta: flush_handlers
