@@ -1,5 +1,4 @@
 ---
-openvpn_client_name: "{{ inventory_hostname }}"
-openvpn_client_server: default-server
-openvpn_client_up_commands: []
-openvpn_client_extra_config: []
+openvpn_client_default_client_name: "{{ inventory_hostname }}"
+openvpn_client_default_up_commands: []
+openvpn_client_default_extra_config: []

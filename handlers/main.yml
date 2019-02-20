@@ -1,6 +1,6 @@
 ---
 - name: Restart OpenVPN service
   service:
-    name: "openvpn@{{ openvpn_client_config_file }}"
+    name: "openvpn@{{ openvpn_client_config_identifier }}"
     enabled: yes
     state: restarted
