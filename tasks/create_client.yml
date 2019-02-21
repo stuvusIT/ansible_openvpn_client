@@ -41,7 +41,7 @@
 - name: Instantiate up-script
   template:
     src: up.sh.j2
-    dest: "{{ openvpn_client_base_dir }}/up.sh"
+    dest: "{{ openvpn_client_base_dir }}/up-{{ openvpn_client_config_identifier }}.sh"
     mode: 0755
   notify: Restart OpenVPN service
 
@@ -49,7 +49,7 @@
   lineinfile:
     path: "{{ openvpn_client_config_path }}"
     line: "{{ item }}"
-  with_items: "{{ ['script-security 2', 'up '+openvpn_client_base_dir+'/up.sh'] + openvpn_client_extra_config }}"
+  with_items: "{{ ['script-security 2', 'up '+openvpn_client_base_dir+'/up-'+openvpn_client_config_identifier+'.sh'] + openvpn_client_extra_config }}"
   notify: Restart OpenVPN service
 
 - name: Notify restart handler
