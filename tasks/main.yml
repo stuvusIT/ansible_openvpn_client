@@ -4,6 +4,17 @@
   apt: 
     name: openvpn
 
+- name: Create drop-in directory
+  file:
+    path: /etc/systemd/system/openvpn@.service.d/
+    state: directory
+
+- name: Install drop-in unit
+  template:
+    src: restart.conf.j2
+    dest: /etc/systemd/system/openvpn@.service.d/restart.conf
+  notify: Reload systemd
+
 - name: Ensure base directory exists
   file:
     path: "{{ openvpn_client_base_dir }}"
