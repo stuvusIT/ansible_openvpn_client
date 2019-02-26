@@ -17,7 +17,7 @@
 
 - name: Slurp recommended client config
   slurp:
-    src: "{{ hostvars[openvpn_client_server_name].openvpn_base_dir }}/{{ openvpn_client_config_identifier }}.ovpn"
+    src: "/etc/openvpn/{{ openvpn_client_config_identifier }}.ovpn"
   register: openvpn_client_remote_config_file
   delegate_to: "{{ openvpn_client_server_name }}"
   when: openvpn_client.local_config_path is not defined
