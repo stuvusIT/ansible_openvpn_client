@@ -1,7 +1,7 @@
 ---
 
 - name: Install OpenVPN
-  apt: 
+  apt:
     name: openvpn
 
 - name: Create drop-in directory
